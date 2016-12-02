@@ -1,4 +1,7 @@
 # docker-duply
+
+[![CircleCI Status](https://circleci.com/gh/scalableminds/docker-duply.svg?&style=shield)](https://circleci.com/gh/scalableminds/docker-duply)
+
 A dockerized duply for backups.
 
 # Builds
