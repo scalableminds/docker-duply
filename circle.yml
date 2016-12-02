@@ -4,7 +4,7 @@ dependencies:
     - sudo service docker start
   override:
     - docker build -t "scalableminds/duply:$VERSION_TAG" .
-      '
+
 test:
   override:
     - true
