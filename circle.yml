@@ -3,7 +3,7 @@ dependencies:
     - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
     - sudo service docker start
   override:
-    - docker build -t "scalableminds/duply:$VERSION_TAG" .
+    - docker build -t "scalableminds/duply:$CIRCLE_BUILD_NUM" .
 
 test:
   override:
