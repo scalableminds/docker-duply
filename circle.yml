@@ -7,4 +7,4 @@ dependencies:
 
 test:
   override:
-    - duply -h
+    - docker run "scalableminds/duply:$CIRCLE_BUILD_NUM" duply -h
