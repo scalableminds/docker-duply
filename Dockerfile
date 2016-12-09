@@ -4,6 +4,9 @@ RUN \
   apt-get update \
   && apt-get install -y \
       duply \
+      gettext-base \
+      gnupg \
+      mailutils \
       openssh-client \
       pwgen \
       rsync \
