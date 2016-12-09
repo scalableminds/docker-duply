@@ -1,0 +1,58 @@
+# please render the template like this:
+# export GPG_PW=...
+# export SCHEME=...
+# export HOST=...
+# export PATH=...
+# export USER=...
+# export PASSWORD=...
+# envsubst '${GPG_PW} ${SCHEME} ${HOST} ${PATH} ${USER} ${PASSWORD}'
+
+# symmetric encryption using passphrase only
+GPG_PW="$GPG_PW"
+
+# credentials & server address of the backup target (URL-Format)
+# syntax is
+#   scheme://[user:password@]host[:port]/[/]path
+# probably one out of
+#   file://[relative|/absolute]/local/path
+#   ftp[s]://user[:password]@other.host[:port]/some_dir
+#   rsync://user[:password]@host.com[:port]::[/]module/some_dir
+#   # rsync over ssh (only keyauth)
+#   rsync://user@host.com[:port]/[relative|/absolute]_path
+#   # for the s3 user/password are AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY
+#   s3://[user:password@]host/bucket_name[/prefix]
+#   s3+http://[user:password@]bucket_name[/prefix]
+#   # scp and sftp are aliases for the ssh backend
+#   ssh://user[:password]@other.host[:port]/[/]some_dir
+#   webdav[s]://user[:password]@other.host/some_dir
+# ATTENTION: characters other than A-Za-z0-9.-_.~ in user,password,path have 
+#            to be replaced by their url encoded pendants, see
+#            http://en.wikipedia.org/wiki/Url_encoding 
+#            if you define the credentials as TARGET_USER, TARGET_PASS below 
+#            duply will try to url_encode them for you if need arises
+# optionally the username/password can be defined as extra variables
+# setting them here _and_ in TARGET results in an error
+TARGET="${SCHEME}://${HOST}/${PATH}"
+TARGET_USER="$USER"
+TARGET_PASS="$PASSWORD"
+
+# base directory to backup
+SOURCE=/to_backup
+
+# temporary file space. at least the size of the biggest file in backup
+# for a successful restoration process. (default is '/tmp', if not set)
+TEMP_DIR=/tmp
+
+# Time frame for old backups to keep, Used for the "purge" command.  
+# see duplicity man page, chapter TIME_FORMATS)
+MAX_AGE=5M
+
+# forces a full backup if last full backup reaches a specified age, for the 
+# format of MAX_FULLBKP_AGE see duplicity man page, chapter TIME_FORMATS
+MAX_FULLBKP_AGE=1W
+DUPL_PARAMS="$DUPL_PARAMS --full-if-older-than $MAX_FULLBKP_AGE "
+
+# set the size of backup chunks to VOLSIZE MB instead of the default 25MB.
+# VOLSIZE must be number of MB's to set the volume size to.
+VOLSIZE=100
+DUPL_PARAMS="$DUPL_PARAMS --volsize $VOLSIZE "
