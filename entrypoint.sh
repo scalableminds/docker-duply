@@ -18,13 +18,13 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
     LOGFILE="$(date +%F)-backup-log"
     if [ -z "$1" ] || [ "$1" = 'backup' ]; then
         duply project backup_verify_purge --force > ${LOGFILE} 2>&1
-        EXIT_CODE = $?
+        EXIT_CODE=$?
     elif [ "$1" = 'restore' ]; then
         exec duply project "$@" > ${LOGFILE} 2>&1
-        EXIT_CODE = $?
+        EXIT_CODE=$?
     else
         exec "$@" > ${LOGFILE} 2>&1
-        EXIT_CODE = $?
+        EXIT_CODE=$?
     fi
 
     if [ -n "$MAIL_FOR_ERRORS" ] && [ $EXIT_CODE -ne 0 ]; then
