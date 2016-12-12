@@ -2,8 +2,8 @@ machine:
   environment:
     TEST_GPG_PW:   yo_testYO!11!
     TEST_SCHEME:        file
-    TEST_HOST:          ""
-    TEST_HOSTPATH:      /backuping_here
+    TEST_HOST:          /
+    TEST_HOSTPATH:      /backup_here
     TEST_USER:     none
     TEST_PASSWORD: none
 
@@ -17,18 +17,33 @@ dependencies:
 test:
   override:
     - docker run --rm "scalableminds/duply:$CIRCLE_BUILD_NUM" duply -h
-    - mkdir to_backup  tmp
+    - mkdir to_backup backup_here tmp
     - echo "Backup Me!" > to_backup/file_to_backup.txt
     - >
-      docker run
-        -v "${PWD}/to_backup:/to_backup"
-        -v "${PWD}/backuping_here:/backuping_here"
-        -v "${PWD}/tmp:/tmp"
-        -e "GPG_PW=$TEST_GPG_PW"
-        -e "SCHEME=$TEST_SCHEME"
-        -e "HOST=$TEST_HOST"
-        -e "HOSTPATH=$TEST_HOSTPATH"
-        -e "USER=$TEST_USER"
-        -e "PASSWORD=$TEST_PASSWORD"
-        --rm
+      docker run \
+        -v "${PWD}/to_backup:/to_backup" \
+        -v "${PWD}/backup_here:$TEST_HOSTPATH" \
+        -v "${PWD}/tmp:/tmp" \
+        -e "GPG_PW=$TEST_GPG_PW" \
+        -e "SCHEME=$TEST_SCHEME" \
+        -e "HOST=$TEST_HOST" \
+        -e "HOSTPATH=$TEST_HOSTPATH" \
+        -e "USER=$TEST_USER" \
+        -e "PASSWORD=$TEST_PASSWORD" \
+        --rm \
         scalableminds/duply:$CIRCLE_BUILD_NUM
+    - mkdir restore_here
+    - >
+      docker run \
+        -v "${PWD}/restore_here:/restore_here" \
+        -v "${PWD}/backup_here:$TEST_HOSTPATH" \
+        -v "${PWD}/tmp:/tmp" \
+        -e "GPG_PW=$TEST_GPG_PW" \
+        -e "SCHEME=$TEST_SCHEME" \
+        -e "HOST=$TEST_HOST" \
+        -e "HOSTPATH=$TEST_HOSTPATH" \
+        -e "USER=$TEST_USER" \
+        -e "PASSWORD=$TEST_PASSWORD" \
+        --rm \
+        scalableminds/duply:$CIRCLE_BUILD_NUM \
+        duply restore /restore_here
