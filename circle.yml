@@ -46,4 +46,4 @@ test:
         -e "PASSWORD=$TEST_PASSWORD" \
         --rm \
         scalableminds/duply:$CIRCLE_BUILD_NUM \
-        duply restore /restore_here
+        restore /restore_here
