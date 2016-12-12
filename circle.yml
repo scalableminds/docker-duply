@@ -1,3 +1,12 @@
+machine:
+  environment:
+    TEST_GPG_PW:   yo_testYO!11!
+    TEST_SCHEME:        file
+    TEST_HOST:          ""
+    TEST_HOSTPATH:      /backuping_here
+    TEST_USER:     none
+    TEST_PASSWORD: none
+
 dependencies:
   pre:
     - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
@@ -7,4 +16,18 @@ dependencies:
 
 test:
   override:
-    - docker run "scalableminds/duply:$CIRCLE_BUILD_NUM" duply -h
+    - docker run --rm "scalableminds/duply:$CIRCLE_BUILD_NUM" duply -h
+    - mkdir to_backup  tmp
+    - echo "Backup Me!" > to_backup/file_to_backup.txt
+    - docker run \
+        -v "${PWD}/to_backup:/to_backup" \
+        -v "${PWD}/backuping_here:/backuping_here" \
+        -v "${PWD}/tmp:/tmp" \
+        -e "GPG_PW=$TEST_GPG_PW" \
+        -e "SCHEME=$TEST_SCHEME" \
+        -e "HOST=$TEST_HOST" \
+        -e "HOSTPATH=$TEST_HOSTPATH" \
+        -e "USER=$TEST_USER" \
+        -e "PASSWORD=$TEST_PASSWORD" \
+        --rm \
+        scalableminds/duply:$CIRCLE_BUILD_NUM
