@@ -16,7 +16,6 @@ dependencies:
 
 test:
   override:
-    - docker run --rm "scalableminds/duply:$CIRCLE_BUILD_NUM" duply -h
     - mkdir to_backup backup_here tmp
     - echo "Backup Me!" > to_backup/file_to_backup.txt
     - >
@@ -47,3 +46,5 @@ test:
         --rm \
         scalableminds/duply:$CIRCLE_BUILD_NUM \
         restore /restore_here
+    - diff -r to_backup restore_here
+    - cat restore_here/file_to_backup.txt
