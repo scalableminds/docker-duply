@@ -1,9 +1,9 @@
 machine:
   environment:
     TEST_GPG_PW:   yo_testYO!11!
-    TEST_SCHEME:        file
-    TEST_HOST:          /
-    TEST_HOSTPATH:      /backup_here
+    TEST_SCHEME:   file
+    TEST_HOST:     /
+    TEST_HOSTPATH: /backup_here
     TEST_USER:     none
     TEST_PASSWORD: none
 
