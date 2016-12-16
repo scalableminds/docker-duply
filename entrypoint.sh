@@ -35,8 +35,12 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
             mongodump $MONGO_ARGS > ${LOGFILE}-mongo 2>&1
             MONGO_EXIT_CODE=$?
             
-            if [ -n "$MAIL_FOR_ERRORS" ] && [ $MONGO_EXIT_CODE -ne 0 ]; then
-                cat $LOGFILE-mongo | mail -s "backup ${HOSTPATH} failed" "$MAIL_FOR_ERRORS"
+            if [ $MONGO_EXIT_CODE -ne 0 ]; then
+                if [ -n "$MAIL_FOR_ERRORS" ]; then
+                    cat $LOGFILE-mongo | mail -s "mongo backup ${MONGO_HOST} failed" "$MAIL_FOR_ERRORS"
+                fi
+                cat $LOGFILE-mongo
+                exit $MONGO_EXIT_CODE
             fi
         fi
         
@@ -68,14 +72,25 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
             if [ -n "$MAIL_FOR_ERRORS" ] && [ $MONGO_EXIT_CODE -ne 0 ]; then
                 cat $LOGFILE-mongo | mail -s "backup ${HOSTPATH} failed" "$MAIL_FOR_ERRORS"
             fi
+            if [ $MONGO_EXIT_CODE -ne 0 ]; then
+                if [ -n "$MAIL_FOR_ERRORS" ]; then
+                    cat $LOGFILE-mongo | mail -s "mongo backup ${MONGO_HOST} failed" "$MAIL_FOR_ERRORS"
+                fi
+                cat $LOGFILE-mongo
+                exit $MONGO_EXIT_CODE
+            fi
         fi
     else
         exec "$@" > ${LOGFILE} 2>&1
         EXIT_CODE=$?
     fi
 
-    if [ -n "$MAIL_FOR_ERRORS" ] && [ $EXIT_CODE -ne 0 ]; then
-        cat $LOGFILE | mail -s "backup ${HOSTPATH} failed" "$MAIL_FOR_ERRORS"
+    if [ $EXIT_CODE -ne 0 ]; then
+        if [ -n "$MAIL_FOR_ERRORS" ]; then
+            cat $LOGFILE | mail -s "backup ${HOSTPATH} failed" "$MAIL_FOR_ERRORS"
+        fi
+        cat $LOGFILE
+        exit $EXIT_CODE
     fi
 else
     exec "$@"
