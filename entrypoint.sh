@@ -28,7 +28,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
             if [ -n "$MONGO_USER" ]; then
                 MONGO_ARGS="$MONGO_ARGS --authenticationDatabase admin -u $MONGO_USER -p $MONGO_PASSWORD"
             fi
-            if [ -z "$MONGO_DB" ]; then
+            if [ -n "$MONGO_DB" ]; then
                 MONGO_ARGS="$MONGO_ARGS -d $MONGO_DB"
             fi
             
@@ -62,7 +62,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
             if [ -n "$MONGO_USER" ]; then
                 MONGO_ARGS="$MONGO_ARGS --authenticationDatabase admin -u $MONGO_USER -p $MONGO_PASSWORD"
             fi
-            if [ -z "$MONGO_DB" ]; then
+            if [ -n "$MONGO_DB" ]; then
                 MONGO_ARGS="$MONGO_ARGS -d $MONGO_DB"
             fi
             
