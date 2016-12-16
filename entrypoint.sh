@@ -45,6 +45,30 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
     elif [ "$1" = 'restore' ]; then
         exec duply project "$@" > ${LOGFILE} 2>&1
         EXIT_CODE=$?
+        
+        if [ "$2" = 'mongo' ]; then
+            if [ -z "$MONGO_HOST" ]; then
+              echo "you need to set the MONGO_HOST env variable"
+              exit 1
+            fi
+            MONGO_ARGS="--oplogReplay --host $MONGO_HOST"
+            if [ -n "$MONGO_PORT" ]; then
+                MONGO_ARGS="$MONGO_ARGS --port $MONGO_PORT"
+            fi
+            if [ -n "$MONGO_USER" ]; then
+                MONGO_ARGS="$MONGO_ARGS --authenticationDatabase admin -u $MONGO_USER -p $MONGO_PASSWORD"
+            fi
+            if [ -z "$MONGO_DB" ]; then
+                MONGO_ARGS="$MONGO_ARGS -d $MONGO_DB"
+            fi
+            
+            mongorestore $MONGO_ARGS mongo > ${LOGFILE}-mongo 2>&1
+            MONGO_EXIT_CODE=$?
+            
+            if [ -n "$MAIL_FOR_ERRORS" ] && [ $MONGO_EXIT_CODE -ne 0 ]; then
+                cat $LOGFILE-mongo | mail -s "backup ${HOSTPATH} failed" "$MAIL_FOR_ERRORS"
+            fi
+        fi
     else
         exec "$@" > ${LOGFILE} 2>&1
         EXIT_CODE=$?
