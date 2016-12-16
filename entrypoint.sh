@@ -17,15 +17,20 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
     LOGFILE="$(date +%F)-backup-log"
     if [ -z "$1" ] || [ "$1" = 'backup' ]; then
         if [ "$1" = 'mongo' ] || [ "$2" = 'mongo' ]; then
-            if [ -z "$MONGO_PORT" ]; then
-              echo "you need to set the MONGO_PORT env variable"
+            if [ -z "$MONGO_HOST" ]; then
+              echo "you need to set the MONGO_HOST env variable"
               exit 1
             fi
-            MONGO_ARGS="-o /to_backup --oplog --port $MONGO_PORT"
+            MONGO_ARGS="-o /to_backup --oplog --host $MONGO_HOST"
+            if [ -n "$MONGO_PORT" ]; then
+                MONGO_ARGS="$MONGO_ARGS --port $MONGO_PORT"
+            fi
             if [ -n "$MONGO_USER" ]; then
                 MONGO_ARGS="$MONGO_ARGS --authenticationDatabase admin -u $MONGO_USER -p $MONGO_PASSWORD"
+            fi
             if [ -z "$MONGO_DB" ]; then
                 MONGO_ARGS="$MONGO_ARGS -d $MONGO_DB"
+            fi
             
             mongodump $MONGO_ARGS > ${LOGFILE}-mongo 2>&1
             MONGO_EXIT_CODE=$?
