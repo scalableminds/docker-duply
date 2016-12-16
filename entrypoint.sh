@@ -32,7 +32,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
                 MONGO_ARGS="$MONGO_ARGS -d $MONGO_DB"
             fi
             
-            mongodump $MONGO_ARGS > ${LOGFILE}-mongo 2>&1
+            mongodump "$MONGO_ARGS" > ${LOGFILE}-mongo 2>&1
             MONGO_EXIT_CODE=$?
             
             if [ $MONGO_EXIT_CODE -ne 0 ]; then
