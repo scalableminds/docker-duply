@@ -39,6 +39,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
                 if [ -n "$MAIL_FOR_ERRORS" ]; then
                     cat $LOGFILE-mongo | mail -s "mongo backup ${MONGO_HOST} failed" "$MAIL_FOR_ERRORS"
                 fi
+                cat mongodump $MONGO_ARGS
                 cat $LOGFILE-mongo
                 exit $MONGO_EXIT_CODE
             fi
@@ -76,6 +77,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
                 if [ -n "$MAIL_FOR_ERRORS" ]; then
                     cat $LOGFILE-mongo | mail -s "mongo backup ${MONGO_HOST} failed" "$MAIL_FOR_ERRORS"
                 fi
+                cat mongorestore $MONGO_ARGS mongo
                 cat $LOGFILE-mongo
                 exit $MONGO_EXIT_CODE
             fi
