@@ -94,3 +94,7 @@ test:
         --rm \
         scalableminds/duply:$CIRCLE_BUILD_NUM \
         restore mongo
+    - >
+      docker run \
+        --link new-mongo:mongo \
+        --rm mongo sh -c 'mongo mongo/test --eval "printjson(db.test.find().toArray())"'
