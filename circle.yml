@@ -78,3 +78,19 @@ test:
         --rm \
         scalableminds/duply:$CIRCLE_BUILD_NUM \
         backup mongo
+    - docker run --name new-mongo -d mongo
+    - >
+      docker run \
+        --link new-mongo:mongo \
+        -v "${PWD}/backup_mongo_here:$TEST_HOSTPATH" \
+        -v "${PWD}/mongo_tmp:/tmp" \
+        -e "GPG_PW=$TEST_GPG_PW" \
+        -e "SCHEME=$TEST_SCHEME" \
+        -e "HOST=$TEST_HOST" \
+        -e "HOSTPATH=$TEST_HOSTPATH" \
+        -e "USER=$TEST_USER" \
+        -e "PASSWORD=$TEST_PASSWORD" \
+        -e "MONGO_HOST=mongo" \
+        --rm \
+        scalableminds/duply:$CIRCLE_BUILD_NUM \
+        restore mongo
