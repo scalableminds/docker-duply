@@ -48,3 +48,33 @@ test:
         restore /restore_here
     - diff -r to_backup restore_here
     - cat restore_here/file_to_backup.txt
+    - echo "TESTING MONGO"
+    - mkdir backup_mongo_here mongo_tmp
+    - docker run --name some-mongo -d mongo
+    - >
+      docker run \
+        --link some-mongo:mongo \
+        --rm \
+        mongo \
+        sh -c \
+          'echo "{\"important_number\": 42}" | \
+          exec mongoimport \
+            --db test \
+            --collection test \
+            --drop \
+            --host "$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT"'
+    - >
+      docker run \
+        --link some-mongo:mongo \
+        -v "${PWD}/backup_mongo_here:$TEST_HOSTPATH" \
+        -v "${PWD}/mongo_tmp:/tmp" \
+        -e "GPG_PW=$TEST_GPG_PW" \
+        -e "SCHEME=$TEST_SCHEME" \
+        -e "HOST=$TEST_HOST" \
+        -e "HOSTPATH=$TEST_HOSTPATH" \
+        -e "USER=$TEST_USER" \
+        -e "PASSWORD=$TEST_PASSWORD" \
+        -e "MONGO_HOST=mongo" \
+        --rm \
+        scalableminds/duply:$CIRCLE_BUILD_NUM \
+        backup mongo
