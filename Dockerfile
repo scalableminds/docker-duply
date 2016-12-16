@@ -8,6 +8,7 @@ RUN \
       gettext-base \
       gnupg \
       mailutils \
+      mongodb-clients \
       openssh-client \
       pwgen \
       rsync \
