@@ -32,14 +32,14 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
                 MONGO_ARGS+=(-d $MONGO_DB)
             fi
             
-            mongodump "${MONGO_ARGS[@]}" > ${LOGFILE}-mongo 2>&1
+            mongodump ${MONGO_ARGS[@]} > ${LOGFILE}-mongo 2>&1
             MONGO_EXIT_CODE=$?
             
             if [ $MONGO_EXIT_CODE -ne 0 ]; then
                 if [ -n "$MAIL_FOR_ERRORS" ]; then
                     cat $LOGFILE-mongo | mail -s "mongo backup ${MONGO_HOST} failed" "$MAIL_FOR_ERRORS"
                 fi
-                cat mongodump $MONGO_ARGS
+                echo "mongodump ${MONGO_ARGS[@]}"
                 cat $LOGFILE-mongo
                 exit $MONGO_EXIT_CODE
             fi
