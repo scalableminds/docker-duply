@@ -74,7 +74,7 @@ test:
         -e "HOSTPATH=$TEST_HOSTPATH" \
         -e "USER=$TEST_USER" \
         -e "PASSWORD=$TEST_PASSWORD" \
-        -e "MONGO_HOST=mongo" \
+        -e "MONGO_HOST=$MONGO_PORT_27017_TCP_ADDR" \
         --rm \
         scalableminds/duply:$CIRCLE_BUILD_NUM \
         backup mongo
