@@ -21,28 +21,28 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
               echo "you need to set the MONGOHOST env variable"
               exit 1
             fi
-            MONGO_ARGS=(-o /to_backup --host $MONGOHOST)
+            MONGO_ARGS="-o /to_backup --host $MONGOHOST"
             if [ -n "$MONGOPORT" ]; then
-                MONGO_ARGS+=(--port $MONGOPORT)
+                MONGO_ARGS+=" --port $MONGOPORT"
             fi
             if [ -n "$MONGOUSER" ]; then
-                MONGO_ARGS+=(--authenticationDatabase admin -u $MONGOUSER -p $MONGOPASSWORD)
+                MONGO_ARGS+=" --authenticationDatabase admin -u $MONGOUSER -p $MONGOPASSWORD"
             fi
             if [ -n "$MONGODB" ]; then
-                MONGO_ARGS+=(-d $MONGODB)
+                MONGO_ARGS+=" -d $MONGODB"
             fi
             if [ -n "$MONGOREPLSET" ]; then
-                MONGO_ARGS+=(--oplog)
+                MONGO_ARGS+=" --oplog"
             fi
             
-            mongodump ${MONGO_ARGS[@]} > ${LOGFILE}-mongo 2>&1
+            mongodump $MONGO_ARGS > ${LOGFILE}-mongo 2>&1
             MONGO_EXIT_CODE=$?
             
             if [ $MONGO_EXIT_CODE -ne 0 ]; then
                 if [ -n "$MAIL_FOR_ERRORS" ]; then
                     cat $LOGFILE-mongo | mail -s "mongo backup ${MONGO_HOST} failed" "$MAIL_FOR_ERRORS"
                 fi
-                echo "mongodump ${MONGO_ARGS[@]}"
+                echo "mongodump $MONGO_ARGS"
                 cat $LOGFILE-mongo
                 exit $MONGO_EXIT_CODE
             fi
@@ -59,15 +59,18 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
               echo "you need to set the MONGO_HOST env variable"
               exit 1
             fi
-            MONGO_ARGS="--oplogReplay --host $MONGOHOST"
+            MONGO_ARGS="--host $MONGOHOST"
             if [ -n "$MONGOPORT" ]; then
-                MONGO_ARGS="$MONGO_ARGS --port $MONGOPORT"
+                MONGO_ARGS+=" --port $MONGOPORT"
             fi
             if [ -n "$MONGOUSER" ]; then
-                MONGO_ARGS="$MONGO_ARGS --authenticationDatabase admin -u $MONGOUSER -p $MONGOPASSWORD"
+                MONGO_ARGS+=" --authenticationDatabase admin -u $MONGOUSER -p $MONGOPASSWORD"
             fi
             if [ -n "$MONGODB" ]; then
-                MONGO_ARGS="$MONGO_ARGS -d $MONGODB"
+                MONGO_ARGS+=" -d $MONGODB"
+            fi
+            if [ -n "$MONGOREPLSET" ]; then
+                MONGO_ARGS+=" --oplogReplay"
             fi
             
             mongorestore $MONGO_ARGS mongo > ${LOGFILE}-mongo 2>&1
@@ -80,7 +83,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
                 if [ -n "$MAIL_FOR_ERRORS" ]; then
                     cat $LOGFILE-mongo | mail -s "mongo backup ${MONGO_HOST} failed" "$MAIL_FOR_ERRORS"
                 fi
-                cat mongorestore $MONGO_ARGS mongo
+                echo "mongorestore $MONGO_ARGS mongo"
                 cat $LOGFILE-mongo
                 exit $MONGO_EXIT_CODE
             fi
