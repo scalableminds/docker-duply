@@ -21,15 +21,15 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
               echo "you need to set the MONGO_HOST env variable"
               exit 1
             fi
-            MONGO_ARGS=("-o /to_backup" "--oplog" "--host $MONGO_HOST")
+            MONGO_ARGS=(-o /to_backup --oplog --host $MONGO_HOST)
             if [ -n "$MONGO_PORT" ]; then
-                MONGO_ARGS+=("--port $MONGO_PORT")
+                MONGO_ARGS+=(--port $MONGO_PORT)
             fi
             if [ -n "$MONGO_USER" ]; then
-                MONGO_ARGS+=("--authenticationDatabase admin" "-u $MONGO_USER" "-p $MONGO_PASSWORD")
+                MONGO_ARGS+=(--authenticationDatabase admin -u $MONGO_USER -p $MONGO_PASSWORD)
             fi
             if [ -n "$MONGO_DB" ]; then
-                MONGO_ARGS+=("-d $MONGO_DB")
+                MONGO_ARGS+=(-d $MONGO_DB)
             fi
             
             mongodump "${MONGO_ARGS[@]}" > ${LOGFILE}-mongo 2>&1
