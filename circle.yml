@@ -74,7 +74,7 @@ test:
         -e "HOSTPATH=$TEST_HOSTPATH" \
         -e "USER=$TEST_USER" \
         -e "PASSWORD=$TEST_PASSWORD" \
-        -e "MONGO_HOST=mongo" \
+        -e "MONGOHOST=mongo" \
         --rm \
         scalableminds/duply:$CIRCLE_BUILD_NUM \
         backup mongo
@@ -90,7 +90,7 @@ test:
         -e "HOSTPATH=$TEST_HOSTPATH" \
         -e "USER=$TEST_USER" \
         -e "PASSWORD=$TEST_PASSWORD" \
-        -e "MONGO_HOST=mongo" \
+        -e "MONGOHOST=mongo" \
         --rm \
         scalableminds/duply:$CIRCLE_BUILD_NUM \
         restore mongo
