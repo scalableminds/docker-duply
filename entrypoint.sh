@@ -51,7 +51,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
         duply project backup_verify_purge --force > ${LOGFILE} 2>&1
         EXIT_CODE=$?
     elif [ "$1" = 'restore' ]; then
-        exec duply project "$@" > ${LOGFILE} 2>&1
+        duply project $@ > ${LOGFILE} 2>&1
         EXIT_CODE=$?
         
         if [ "$2" = 'mongo' ]; then
@@ -86,7 +86,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
             fi
         fi
     else
-        exec "$@" > ${LOGFILE} 2>&1
+        $@ > ${LOGFILE} 2>&1
         EXIT_CODE=$?
     fi
 
