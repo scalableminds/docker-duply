@@ -55,19 +55,19 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
         EXIT_CODE=$?
         
         if [ "$2" = 'mongo' ]; then
-            if [ -z "$MONGO_HOST" ]; then
+            if [ -z "$MONGOHOST" ]; then
               echo "you need to set the MONGO_HOST env variable"
               exit 1
             fi
-            MONGO_ARGS="--oplogReplay --host $MONGO_HOST"
-            if [ -n "$MONGO_PORT" ]; then
-                MONGO_ARGS="$MONGO_ARGS --port $MONGO_PORT"
+            MONGO_ARGS="--oplogReplay --host $MONGOHOST"
+            if [ -n "$MONGOPORT" ]; then
+                MONGO_ARGS="$MONGO_ARGS --port $MONGOPORT"
             fi
-            if [ -n "$MONGO_USER" ]; then
-                MONGO_ARGS="$MONGO_ARGS --authenticationDatabase admin -u $MONGO_USER -p $MONGO_PASSWORD"
+            if [ -n "$MONGOUSER" ]; then
+                MONGO_ARGS="$MONGO_ARGS --authenticationDatabase admin -u $MONGOUSER -p $MONGOPASSWORD"
             fi
-            if [ -n "$MONGO_DB" ]; then
-                MONGO_ARGS="$MONGO_ARGS -d $MONGO_DB"
+            if [ -n "$MONGODB" ]; then
+                MONGO_ARGS="$MONGO_ARGS -d $MONGODB"
             fi
             
             mongorestore $MONGO_ARGS mongo > ${LOGFILE}-mongo 2>&1
