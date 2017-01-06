@@ -97,12 +97,14 @@ test:
     - >
       docker run \
         --link new-mongo:mongo \
-        --rm mongo sh -c 'mongo mongo/test --eval "printjson(db.test.find().toArray())"'
+        --rm mongo sh -c 'mongo mongo/test --eval "printjson(db.test.find().toArray())"' | \
+      egrep '"important_number" : 42'
 
 deployment:
   hub:
     branch: /.*/
     commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker tag scalableminds/duply:$CIRCLE_BUILD_NUM scalableminds/duply:branch-$CIRCLE_BRANCH
       - docker tag scalableminds/duply:$CIRCLE_BUILD_NUM scalableminds/duply:commit-$CIRCLE_SHA1
       - docker push scalableminds/duply:$CIRCLE_BUILD_NUM
