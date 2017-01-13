@@ -12,7 +12,7 @@ dependencies:
     - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
     - sudo service docker start
   override:
-    - docker build -t "scalableminds/duply:$CIRCLE_BUILD_NUM" .
+    - docker build -t "scalableminds/duply:${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM}" .
 
 test:
   override:
@@ -30,7 +30,7 @@ test:
         -e "USER=$TEST_USER" \
         -e "PASSWORD=$TEST_PASSWORD" \
         --rm \
-        scalableminds/duply:$CIRCLE_BUILD_NUM
+        scalableminds/duply:${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM}
     - mkdir restore_here
     - >
       docker run \
@@ -44,7 +44,7 @@ test:
         -e "USER=$TEST_USER" \
         -e "PASSWORD=$TEST_PASSWORD" \
         --rm \
-        scalableminds/duply:$CIRCLE_BUILD_NUM \
+        scalableminds/duply:${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM} \
         restore /restore_here
     - diff -r to_backup restore_here
     - cat restore_here/file_to_backup.txt
@@ -76,7 +76,7 @@ test:
         -e "PASSWORD=$TEST_PASSWORD" \
         -e "MONGOHOST=mongo" \
         --rm \
-        scalableminds/duply:$CIRCLE_BUILD_NUM \
+        scalableminds/duply:${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM} \
         backup mongo
     - docker run --name new-mongo -d mongo
     - >
@@ -92,7 +92,7 @@ test:
         -e "PASSWORD=$TEST_PASSWORD" \
         -e "MONGOHOST=mongo" \
         --rm \
-        scalableminds/duply:$CIRCLE_BUILD_NUM \
+        scalableminds/duply:${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM} \
         restore mongo
     - >
       docker run \
@@ -105,9 +105,7 @@ deployment:
     branch: /.*/
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker tag scalableminds/duply:$CIRCLE_BUILD_NUM scalableminds/duply:branch-$CIRCLE_BRANCH
-      - docker tag scalableminds/duply:$CIRCLE_BUILD_NUM scalableminds/duply:commit-$CIRCLE_SHA1
-      - docker push scalableminds/duply:$CIRCLE_BUILD_NUM
-      - docker push scalableminds/duply:branch-$CIRCLE_BRANCH
-      - docker push scalableminds/duply:commit-$CIRCLE_SHA1
+      - docker tag scalableminds/duply:${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM} scalableminds/duply:${CIRCLE_BRANCH}
+      - docker push scalableminds/duply:${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM}
+      - docker push scalableminds/duply:${CIRCLE_BRANCH}
       - docker logout
