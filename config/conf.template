@@ -56,3 +56,6 @@ DUPL_PARAMS="$DUPL_PARAMS --full-if-older-than $MAX_FULLBKP_AGE "
 # VOLSIZE must be number of MB's to set the volume size to.
 VOLSIZE=100
 DUPL_PARAMS="$DUPL_PARAMS --volsize $VOLSIZE "
+
+# allowing source hostname mismatch, which is easily happening in Docker environments:
+DUPL_PARAMS="$DUPL_PARAMS --allow-source-mismatch "
