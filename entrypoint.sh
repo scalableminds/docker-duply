@@ -35,7 +35,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
                 MONGO_ARGS+=" --oplog"
             fi
             
-            mongodump $MONGO_ARGS > ${LOGFILE}-mongo 2>&1
+            mongodump --gzip $MONGO_ARGS > ${LOGFILE}-mongo 2>&1
             MONGO_EXIT_CODE=$?
             
             if [ $MONGO_EXIT_CODE -ne 0 ]; then
@@ -73,7 +73,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
                 MONGO_ARGS+=" --oplogReplay"
             fi
             
-            mongorestore $MONGO_ARGS mongo > ${LOGFILE}-mongo 2>&1
+            mongorestore --gzip $MONGO_ARGS mongo > ${LOGFILE}-mongo 2>&1
             MONGO_EXIT_CODE=$?
             
             if [ -n "$MAIL_FOR_ERRORS" ] && [ $MONGO_EXIT_CODE -ne 0 ]; then
