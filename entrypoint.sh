@@ -21,7 +21,7 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
               echo "you need to set the MONGOHOST env variable"
               exit 1
             fi
-            MONGO_ARGS="-o /to_backup --host $MONGOHOST"
+            MONGO_ARGS="-o /to_backup --host $MONGOHOST --gzip"
             if [ -n "$MONGOPORT" ]; then
                 MONGO_ARGS+=" --port $MONGOPORT"
             fi
@@ -35,31 +35,30 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
                 MONGO_ARGS+=" --oplog"
             fi
             
-            mongodump --gzip $MONGO_ARGS > ${LOGFILE}-mongo 2>&1
+            mongodump $MONGO_ARGS 2>&1 | tee ${LOGFILE}-mongo
             MONGO_EXIT_CODE=$?
             
             if [ $MONGO_EXIT_CODE -ne 0 ]; then
                 if [ -n "$MAIL_FOR_ERRORS" ]; then
-                    cat $LOGFILE-mongo | mail -s "mongo backup ${MONGO_HOST} failed" "$MAIL_FOR_ERRORS"
+                    cat $LOGFILE-mongo | mail -s "mongo backup ${MONGOHOST} failed" "$MAIL_FOR_ERRORS"
                 fi
-                echo "mongodump $MONGO_ARGS"
-                cat $LOGFILE-mongo
+                echo "mongodump $MONGO_ARGS exited with error $MONGO_EXIT_CODE"
                 exit $MONGO_EXIT_CODE
             fi
         fi
         
-        duply project backup_verify_purge --force > ${LOGFILE} 2>&1
+        duply project backup_verify_purge --force 2>&1 | tee ${LOGFILE}
         EXIT_CODE=$?
     elif [ "$1" = 'restore' ]; then
-        duply project $@ > ${LOGFILE} 2>&1
+        duply project $@ 2>&1 | tee ${LOGFILE}
         EXIT_CODE=$?
         
         if [ "$2" = 'mongo' ]; then
             if [ -z "$MONGOHOST" ]; then
-              echo "you need to set the MONGO_HOST env variable"
+              echo "you need to set the MONGOHOST env variable"
               exit 1
             fi
-            MONGO_ARGS="--host $MONGOHOST"
+            MONGO_ARGS="--host $MONGOHOST --gzip"
             if [ -n "$MONGOPORT" ]; then
                 MONGO_ARGS+=" --port $MONGOPORT"
             fi
@@ -73,23 +72,19 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
                 MONGO_ARGS+=" --oplogReplay"
             fi
             
-            mongorestore --gzip $MONGO_ARGS mongo > ${LOGFILE}-mongo 2>&1
+            mongorestore $MONGO_ARGS mongo 2>&1 | tee ${LOGFILE}-mongo
             MONGO_EXIT_CODE=$?
             
-            if [ -n "$MAIL_FOR_ERRORS" ] && [ $MONGO_EXIT_CODE -ne 0 ]; then
-                cat $LOGFILE-mongo | mail -s "backup ${HOSTPATH} failed" "$MAIL_FOR_ERRORS"
-            fi
             if [ $MONGO_EXIT_CODE -ne 0 ]; then
                 if [ -n "$MAIL_FOR_ERRORS" ]; then
-                    cat $LOGFILE-mongo | mail -s "mongo backup ${MONGO_HOST} failed" "$MAIL_FOR_ERRORS"
+                    cat $LOGFILE-mongo | mail -s "mongo restore ${MONGOHOST} failed" "$MAIL_FOR_ERRORS"
                 fi
-                echo "mongorestore $MONGO_ARGS mongo"
-                cat $LOGFILE-mongo
+                echo "mongorestore $MONGO_ARGS mongo exited with error $MONGO_EXIT_CODE"
                 exit $MONGO_EXIT_CODE
             fi
         fi
     else
-        $@ > ${LOGFILE} 2>&1
+        $@ 2>&1 | tee ${LOGFILE}
         EXIT_CODE=$?
     fi
 
@@ -97,7 +92,6 @@ if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply
         if [ -n "$MAIL_FOR_ERRORS" ]; then
             cat $LOGFILE | mail -s "backup ${HOSTPATH} failed" "$MAIL_FOR_ERRORS"
         fi
-        cat $LOGFILE
         exit $EXIT_CODE
     fi
 else
