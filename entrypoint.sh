@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
-
-set -- "${1:-}" "${2:-}"
+set -Eeo pipefail # unset variables are catched everywhere
 
 if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply' ]; then
     if [ -z "$GPG_PW"   ] || \
