@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 if [ -z "$1" ] || [ "$1" = 'backup' ] || [ "$1" = 'restore' ] || [ "$1" = 'duply' ]; then
     if [ -z "$GPG_PW"   ] || \
        [ -z "$SCHEME"   ] || \
