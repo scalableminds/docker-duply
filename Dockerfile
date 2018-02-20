@@ -6,6 +6,7 @@ RUN \
   && apt-get update \
   && apt-get install -y \
       coreutils \
+      curl \
       duply \
       gettext-base \
       gnupg \
